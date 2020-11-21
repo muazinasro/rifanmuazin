@@ -1,29 +1,28 @@
 import React from "react"
-import { graphql } from "gatsby"
+import { Link } from "gatsby"
+import {RiArrowLeftSLine, RiBugLine, RiSkullLine} from "react-icons/ri"
 
-import Layout from "../components/layout"
 import SEO from "../components/seo"
+import Layout from "../components/layout"
 
-const NotFoundPage = ({ data, location }) => {
-  const siteTitle = data.site.siteMetadata.title
+const NotFound = () => (
+  <Layout className="not-found-page">
+    <SEO title="Page not found"/>
+    <div className="wrapper" style={{
+      textAlign: "center"
+    }}>
+      <header>
+        <RiSkullLine style={{
+          fontSize: "128px",
+          color: "var(--primary-color)"
+        }}/>
+        <h1>Oops we did not expect that to happen</h1>
+        <p>Have you wondered into the unknow. Let us help you, Please take a look at below options</p>
+      </header>
+      <Link to="/" className="button"><RiArrowLeftSLine className="icon -left"/>Back to Homepage</Link>
+      <Link to="/contact" className="button -outline">Report this <RiBugLine className="icon -right"/></Link>
+    </div>
+  </Layout>
+)
 
-  return (
-    <Layout location={location} title={siteTitle}>
-      <SEO title="404: Not Found" />
-      <h1>404: Not Found</h1>
-      <p>You just hit a route that doesn&#39;t exist... the sadness.</p>
-    </Layout>
-  )
-}
-
-export default NotFoundPage
-
-export const pageQuery = graphql`
-  query {
-    site {
-      siteMetadata {
-        title
-      }
-    }
-  }
-`
+export default NotFound

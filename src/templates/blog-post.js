@@ -1,106 +1,108 @@
 import React from "react"
 import { Link, graphql } from "gatsby"
+import Img from "gatsby-image"
+import { RiArrowRightLine, RiArrowLeftLine } from "react-icons/ri"
 
-import Bio from "../components/bio"
 import Layout from "../components/layout"
-import SEO from "../components/seo"
+import SEO from '../components/seo';
 
-const BlogPostTemplate = ({ data, location }) => {
-  const post = data.markdownRemark
-  const siteTitle = data.site.siteMetadata?.title || `Title`
-  const { previous, next } = data
+const Pagination = (props) => (
+  <div className="pagination -post">
+    <ul>
+        {(props.previous && props.previous.frontmatter.template === 'blog-post') && (
+          <li>
+              <Link to={props.previous.frontmatter.slug} rel="prev">
+                <p><span className="icon -left"><RiArrowLeftLine/></span> Previous</p>
+                <span className="page-title">{props.previous.frontmatter.title}</span>
+              </Link>
+          </li>
+        )}
+        {(props.next && props.next.frontmatter.template === 'blog-post') && (
+          <li>
+            <Link to={props.next.frontmatter.slug} rel="next">
+              <p>Next <span className="icon -right"><RiArrowRightLine/></span></p>
+              <span className="page-title">{props.next.frontmatter.title}</span>
+            </Link>
+          </li>
+        )}
+    </ul>
+  </div>
+)
+
+const Post = ({ data, pageContext }) => {
+  const { markdownRemark } = data // data.markdownRemark holds your post data
+  const { frontmatter, html, excerpt } = markdownRemark
+  const Image = frontmatter.featuredImage ? frontmatter.featuredImage.childImageSharp.fluid : ""
+  const { previous, next } = pageContext
+
+  let props = {
+    previous,
+    next
+  }
 
   return (
-    <Layout location={location} title={siteTitle}>
+    <Layout className="page">
       <SEO
-        title={post.frontmatter.title}
-        description={post.frontmatter.description || post.excerpt}
+        title={frontmatter.title}
+        description={frontmatter.description ? frontmatter.description : excerpt}
+        image={Image}
+        article={true}
       />
-      <article
-        className="blog-post"
-        itemScope
-        itemType="http://schema.org/Article"
-      >
-        <header>
-          <h1 itemProp="headline">{post.frontmatter.title}</h1>
-          <p>{post.frontmatter.date}</p>
+      <article className="blog-post">
+        <header className="featured-banner">
+          <section className="article-header">
+            <h1>{frontmatter.title}</h1>
+            <time>{frontmatter.date}</time>
+          </section>
+          {Image ? (
+            <Img 
+              fluid={Image} 
+              objectFit="cover"
+              objectPosition="50% 50%"
+              alt={frontmatter.title + ' - Featured image'}
+              className="featured-image"
+            />
+          ) : ""}
         </header>
-        <section
-          dangerouslySetInnerHTML={{ __html: post.html }}
-          itemProp="articleBody"
+        
+        <div
+          className="blog-post-content"
+          dangerouslySetInnerHTML={{ __html: html }}
         />
-        <hr />
-        <footer>
-          <Bio />
-        </footer>
       </article>
-      <nav className="blog-post-nav">
-        <ul
-          style={{
-            display: `flex`,
-            flexWrap: `wrap`,
-            justifyContent: `space-between`,
-            listStyle: `none`,
-            padding: 0,
-          }}
-        >
-          <li>
-            {previous && (
-              <Link to={previous.fields.slug} rel="prev">
-                ← {previous.frontmatter.title}
-              </Link>
-            )}
-          </li>
-          <li>
-            {next && (
-              <Link to={next.fields.slug} rel="next">
-                {next.frontmatter.title} →
-              </Link>
-            )}
-          </li>
-        </ul>
-      </nav>
+      {(previous || next) && (
+        <Pagination {...props} />
+      )}
     </Layout>
   )
 }
 
-export default BlogPostTemplate
+export default Post
 
 export const pageQuery = graphql`
-  query BlogPostBySlug(
-    $id: String!
-    $previousPostId: String
-    $nextPostId: String
-  ) {
-    site {
-      siteMetadata {
-        title
-      }
-    }
-    markdownRemark(id: { eq: $id }) {
+  query BlogPostQuery($id: String!) {
+    markdownRemark( 
+      id: { eq: $id }
+    ) {
       id
-      excerpt(pruneLength: 160)
       html
+      excerpt(pruneLength: 148)
       frontmatter {
-        title
         date(formatString: "MMMM DD, YYYY")
+        slug
+        title
         description
-      }
-    }
-    previous: markdownRemark(id: { eq: $previousPostId }) {
-      fields {
-        slug
-      }
-      frontmatter {
-        title
-      }
-    }
-    next: markdownRemark(id: { eq: $nextPostId }) {
-      fields {
-        slug
-      }
-      frontmatter {
-        title
+        featuredImage {
+          childImageSharp {
+            fluid(maxWidth: 1980, maxHeight: 768, quality: 80, srcSetBreakpoints: [350, 700, 1050, 1400]) {
+              ...GatsbyImageSharpFluid
+              ...GatsbyImageSharpFluidLimitPresentationSize
+            }
+            sizes {
+              src
+            }
+          }
+        }
       }
     }
   }
