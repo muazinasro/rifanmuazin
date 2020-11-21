@@ -1,14 +1,14 @@
 module.exports = {
   siteMetadata: {
-    title: `Gatsby Starter Blog`,
+    title: `Rifan Muazin Gatsby Blog`,
     author: {
-      name: `Kyle Mathews`,
-      summary: `who lives and works in San Francisco building useful things.`,
+      name: `Rifan Muazin`,
+      summary: `I am Indonesian, I Like Indomie Noodle and I am an Affiliate.`,
     },
-    description: `A starter blog demonstrating what Gatsby can do.`,
-    siteUrl: `https://gatsby-starter-blog-demo.netlify.app/`,
+    description: `A Simple Blog for Affiliate Product Recomendation.`,
+    siteUrl: `https://rifanmuazin.gtsb.io/`,
     social: {
-      twitter: `kylemathews`,
+      twitter: `MuazinAsro`,
     },
   },
   plugins: [
